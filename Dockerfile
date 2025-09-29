@@ -1,4 +1,4 @@
 FROM openjdk:latest
-COPY ./target/classes/com /tmp/com
-WORKDIR /tmp
+COPY ./target/classes /app
+WORKDIR /app
 ENTRYPOINT ["java", "com.napier.com.App"]
