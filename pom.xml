@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.napier.devops.App</mainClass>
+                            <mainClass>com.napier.com.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
