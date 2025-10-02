@@ -1,8 +1,9 @@
 # Software Engineering Methods
-### Author - Danylo Vanin 40776955
-### Author Stanislav Dvoryannikov 40723783 
-### Author Lisa Burns 40774328
-### Author Siddharth 40796177
+### Authors: 
++ Danylo Vanin - 40776955
++ Stanislav Dvoryannikov - 40723783 
++ Lisa Burns - 40774328
++ Tharun Siddharth Shyam - 40796177
 
 ---
 
