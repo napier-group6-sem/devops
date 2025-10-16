@@ -30,5 +30,6 @@ services:
       DB_NAME: world
       DB_USER: root
       DB_PASS: example
+      APP_IDLE_SECONDS: "20"
     stdin_open: true
     tty: true
