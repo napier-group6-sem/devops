@@ -1,62 +1,42 @@
 package com.napier.sem;
 
-import java.sql.*;
+import java.util.Scanner;
 
-public class App
-{
-    public static void main(String[] args)
-    {
-        try
-        {
-            // Load Database driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("Could not load SQL driver");
-            System.exit(-1);
-        }
+public class App {
+    public static void main(String[] args) {
+        String host = getenvOr("DB_HOST", "localhost");
+        int    port = Integer.parseInt(getenvOr("DB_PORT", "3306"));
+        String name = getenvOr("DB_NAME", "world");
+        String user = getenvOr("DB_USER", "root");
+        String pass = getenvOr("DB_PASS", "example");
 
-        // Connection to the database
-        Connection con = null;
-        int retries = 100;
-        for (int i = 0; i < retries; ++i)
-        {
-            System.out.println("Connecting to database...");
-            try
-            {
-                // Wait a bit for db to start
-                Thread.sleep(1000);
-                // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
-                System.out.println("Successfully connected");
-                // Wait a bit
-                Thread.sleep(1000);
-                // Exit for loop
-                break;
-            }
-            catch (SQLException sqle)
-            {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
-                System.out.println(sqle.getMessage());
-            }
-            catch (InterruptedException ie)
-            {
-                System.out.println("Thread interrupted? Should not happen.");
+        Database db = new Database();
+        db.connect(host, port, name, user, pass);
+
+        Scanner in = new Scanner(System.in);
+        CountryReport country = new CountryReport();
+        mainloop:
+        while (true) {
+            System.out.println("""
+                \n=== Reports ===
+                1) Country Report
+                0) Exit
+                """);
+            System.out.print("Choose: ");
+            String c = in.nextLine().trim();
+            switch (c) {
+                case "1" -> country.run(db.getConnection());
+                case "0" -> { break mainloop; }
+                default -> System.out.println("Unknown option.");
             }
         }
 
-        if (con != null)
-        {
-            try
-            {
-                // Close connection
-                con.close();
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error closing connection to database");
-            }
-        }
+        db.disconnect();
+        System.out.println("Bye!");
+    }
+
+    private static String getenvOr(String k, String def) {
+        String v = System.getenv(k);
+        return (v == null || v.isEmpty()) ? def : v;
     }
 }

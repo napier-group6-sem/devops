@@ -11,7 +11,8 @@
 #### Commands to paste into Terminal:
 
 + mvn package -DskipTests
-+ docker compose up --build
++ docker compose run --rm -it app
+
 
 Make sure your Docker Desktop is running!
 

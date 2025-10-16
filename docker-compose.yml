@@ -1,19 +1,22 @@
-version: '3.8'
+version: "3.8"
+
 services:
   db:
     build: ./db
     container_name: sem_db
     environment:
-      - MYSQL_ROOT_PASSWORD=example
-      - MYSQL_DATABASE=world
-      - MYSQL_ROOT_HOST=%
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: world
+      MYSQL_ROOT_HOST: "%"
     ports:
-      - "33060:3306"
+      - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pexample"]
       interval: 5s
       timeout: 5s
       retries: 20
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
 
   app:
     build: .
@@ -21,3 +24,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      DB_HOST: sem_db
+      DB_PORT: "3306"
+      DB_NAME: world
+      DB_USER: root
+      DB_PASS: example
+    stdin_open: true
+    tty: true
