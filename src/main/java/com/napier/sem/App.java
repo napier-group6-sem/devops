@@ -1,8 +1,12 @@
 package com.napier.sem;
 
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class App {
+
+    private static final AtomicLong LAST_ACTIVITY = new AtomicLong(System.currentTimeMillis());
+
     public static void main(String[] args) {
         String host = getenvOr("DB_HOST", "localhost");
         int    port = Integer.parseInt(getenvOr("DB_PORT", "3306"));
@@ -13,8 +17,26 @@ public class App {
         Database db = new Database();
         db.connect(host, port, name, user, pass);
 
+
+        int idleSec = Integer.parseInt(getenvOr("APP_IDLE_SECONDS", "30"));
+        Thread watchdog = new Thread(() -> {
+            while (true) {
+                long idle = System.currentTimeMillis() - LAST_ACTIVITY.get();
+                if (idle > idleSec * 1000L) {
+                    System.out.println("\nNo input for " + idleSec + " seconds. Exiting...");
+                    try { db.disconnect(); } catch (Exception ignored) {}
+                    System.exit(0);
+                }
+                try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+            }
+        });
+        watchdog.setDaemon(true);
+        watchdog.start();
+
+
         Scanner in = new Scanner(System.in);
         CountryReport country = new CountryReport();
+
         mainloop:
         while (true) {
             System.out.println("""
@@ -24,6 +46,8 @@ public class App {
                 """);
             System.out.print("Choose: ");
             String c = in.nextLine().trim();
+            LAST_ACTIVITY.set(System.currentTimeMillis());
+
             switch (c) {
                 case "1" -> country.run(db.getConnection());
                 case "0" -> { break mainloop; }
