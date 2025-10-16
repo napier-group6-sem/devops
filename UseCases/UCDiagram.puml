@@ -1,0 +1,116 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+top to bottom direction
+scale 0.8
+skinparam dpi 120
+skinparam DefaultFontSize 12
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecaseBackgroundColor white
+skinparam linetype ortho
+skinparam Shadowing false
+skinparam defaultTextAlignment left
+
+
+' ==== ACTORS (TOP) ====
+together {
+ actor "Data Engineer" as DE
+ actor "End User" as EU
+ actor "External Data Source" as ExtDS
+ actor "Email Service" as EmailSvc
+ actor "Auth Service" as AuthSvc
+}
+
+
+' ==== SYSTEM (STRICT TOP→DOWN) ====
+rectangle "Population Reports System" as SYS {
+
+
+ ' Umbrella UCs (actors connect to these)
+ usecase "Generate Rankings &\nSorted Lists" as UC_RANK
+ package "Rankings & Sorted Lists" as PKG1 {
+   usecase "UC-02 Country Population (desc)"
+   usecase "UC-03 Top-N Countries"
+   usecase "UC-04 City Population (desc)"
+   usecase "UC-05 Top-N Cities"
+   usecase "UC-06 Capital City Population (desc)"
+   usecase "UC-07 Top-N Capitals"
+ }
+
+
+ usecase "Generate Breakdown &\nLevels" as UC_BRK
+ package "Breakdown & Levels" as PKG2 {
+   usecase "UC-08 Population Breakdown"
+   usecase "UC-09 Population by Level"
+   usecase "UC-10 Key-Language Speakers"
+   usecase "UC-14 Breakdown Table (with %)"
+ }
+
+
+ usecase "Generate Master Reports" as UC_MAS
+ package "Master Reports" as PKG3 {
+   usecase "UC-11 Country Master"
+   usecase "UC-12 City Master"
+   usecase "UC-13 Capital City Master"
+ }
+
+
+ usecase "View / Download Reports" as UC_VIEW
+ usecase "Schedule Report" as UC_SCHED
+ usecase "Refresh / Import Datasets" as UC_REFRESH
+ usecase "Authenticate User" as UC_AUTH
+ usecase "Validate Parameters" as UC_VAL
+
+
+ ' Minimal relations (kept readable)
+ UC_RANK .> UC_AUTH : <<include>>
+ UC_BRK  .> UC_AUTH : <<include>>
+ UC_MAS  .> UC_AUTH : <<include>>
+ UC_RANK .> UC_VAL  : <<include>>
+ UC_BRK  .> UC_VAL  : <<include>>
+ UC_MAS  .> UC_VAL  : <<include>>
+ UC_SCHED .> UC_RANK : <<extend>>
+ UC_SCHED .> UC_BRK  : <<extend>>
+ UC_SCHED .> UC_MAS  : <<extend>>
+
+
+ ' Force strict vertical stacking
+ UC_RANK -[hidden]down-> PKG1
+ PKG1    -[hidden]down-> UC_BRK
+ UC_BRK  -[hidden]down-> PKG2
+ PKG2    -[hidden]down-> UC_MAS
+ UC_MAS  -[hidden]down-> PKG3
+ PKG3    -[hidden]down-> UC_VIEW
+ UC_VIEW -[hidden]down-> UC_SCHED
+ UC_SCHED -[hidden]down-> UC_REFRESH
+ UC_REFRESH -[hidden]down-> UC_AUTH
+ UC_AUTH -[hidden]down-> UC_VAL
+}
+
+
+' ==== ACTOR CONNECTIONS (DOWNWARD ONLY) ====
+DE --> UC_RANK
+DE --> UC_BRK
+DE --> UC_MAS
+DE --> UC_VIEW
+DE --> UC_SCHED
+DE --> UC_REFRESH
+
+
+EU --> UC_VIEW
+
+
+' ==== EXTERNAL SYSTEMS (BOTTOM) ====
+ExtDS   <-- UC_REFRESH
+EmailSvc <-- UC_SCHED
+AuthSvc  <-- UC_AUTH
+
+
+' ==== SHORT LEGEND ====
+legend bottom
+ Umbrella UCs generate all listed reports.
+ Auth & validation apply; "Schedule Report" runs them automatically.
+endlegend
+
+@enduml
