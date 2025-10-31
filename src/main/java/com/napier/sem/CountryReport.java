@@ -3,6 +3,14 @@ package com.napier.sem;
 import java.sql.*;
 import java.util.Scanner;
 
+/**
+ * File: CountryReport.java
+ * Description: Provides functionality to generate various country-based population reports,
+ *              including sorting and filtering by world, continent, and region. It connects
+ *              to the database, executes SQL queries, and displays formatted output.
+ * Authors: Danylo Vanin, Stanislav Dvoryannikov, Lisa Burns, Tharun Siddharth Shyam
+ * Date: 15 October 2025
+ */
 public class CountryReport {
 
     // just returns the name of this report so the main menu can show it

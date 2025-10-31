@@ -3,6 +3,15 @@ package com.napier.sem;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * File: App.java
+ * Description: Main entry point of the population reporting application. Handles database
+ *              connection setup, user input menu navigation, and automatic idle timeout
+ *              management through a background watchdog thread.
+ * Authors: Danylo Vanin, Stanislav Dvoryannikov, Lisa Burns, Tharun Siddharth Shyam
+ * Date: 15 October 2025
+ */
+
 public class App {
 
     // keeps track of when the user last did something, so we can detect idleness
