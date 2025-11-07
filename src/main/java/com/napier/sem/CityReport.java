@@ -3,14 +3,30 @@ package com.napier.sem;
 import java.sql.*;
 import java.util.Scanner;
 
+/**
+ * CityReport generates various reports about cities from the world database.
+ * It supports filtering by continent, region, country, district, and top-N queries.
+ */
+
 public class CityReport {
+
+    /**
+     * Returns the name of the report module.
+     */
 
     public String name() { return "City Report"; }
 
+    /**
+     * Main interactive loop for city report options.
+     * Displays a menu, accepts user input, and executes corresponding queries.
+     *
+     * @param con Active SQL connection to the world database
+     */
+
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);
-        while (true) {
-            System.out.println("""
+        while (true) {            // Display menu options
+            System.out.println("""       
                 \n[City Report]
                 1) All cities in the world (DESC)
                 2) All cities in a continent (DESC)
@@ -26,7 +42,7 @@ public class CityReport {
                 """);
             System.out.print("Choose: ");
             String c = in.nextLine().trim();
-            try {
+            try {                             // Dispatch based on user choice
                 switch (c) {
                     case "1" -> queryWorld(con);
                     case "2" -> { System.out.print("Continent: "); queryByContinent(con, in.nextLine().trim()); }
@@ -54,7 +70,7 @@ public class CityReport {
                         System.out.print("N: "); int n = Integer.parseInt(in.nextLine().trim());
                         queryTopDistrict(con, dist, n);
                     }
-                    case "0" -> { return; }
+                    case "0" -> { return; }                 // Exit to main menu
                     default -> System.out.println("Unknown option.");
                 }
             } catch (SQLException e) {
@@ -65,7 +81,11 @@ public class CityReport {
         }
     }
 
-    // --- Queries ---
+    // --- Query Methods ---
+
+    /**
+     * Lists all cities in the world ordered by population descending.
+     */
     private void queryWorld(Connection con) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -76,6 +96,10 @@ public class CityReport {
         try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) { print(rs); }
     }
+
+    /**
+     * Lists all cities in a given continent.
+     */
 
     private void queryByContinent(Connection con, String continent) throws SQLException {
         String sql = """
@@ -91,6 +115,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists all cities in a given region.
+     */
     private void queryByRegion(Connection con, String region) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -104,6 +131,10 @@ public class CityReport {
             try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
+
+    /**
+     * Lists all cities in a given country.
+     */
 
     private void queryByCountry(Connection con, String country) throws SQLException {
         String sql = """
@@ -119,6 +150,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists all cities in a given district.
+     */
     private void queryByDistrict(Connection con, String district) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -133,6 +167,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists top N cities in the world by population.
+     */
     private void queryTopWorld(Connection con, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -146,6 +183,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists top N cities in a continent by population.
+     */
     private void queryTopContinent(Connection con, String continent, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -161,6 +201,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists top N cities in a region by population.
+     */
     private void queryTopRegion(Connection con, String region, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -176,6 +219,9 @@ public class CityReport {
         }
     }
 
+    /**
+     * Lists top N cities in a country by population.
+     */
     private void queryTopCountry(Connection con, String country, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
