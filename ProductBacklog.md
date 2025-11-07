@@ -3,12 +3,7 @@
 This file details the elements of Software Engineering Methods Coursework Project, for Friday 11am Group 6, that still need to be completed.
 
 ## Development Tasks                   
-                                                                      
-* Issues being used on GitHub                                         
-* 	Define user stories                                               
-*	Integrate with Zube.io                                            
-*   Define full use cases                                             
-*	Create use case diagram                                           
+
 *	Define suitable unit tests                                        
 *	Define suitable integration tests                                 
 *	Run tests on GitHub Actions                                       
