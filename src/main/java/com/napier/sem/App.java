@@ -17,7 +17,7 @@ public class App {
         Database db = new Database();
         db.connect(host, port, name, user, pass);
 
-        // Idle timeout watchdog
+
         int idleSec = Integer.parseInt(getenvOr("APP_IDLE_SECONDS", "30"));
         Thread watchdog = new Thread(() -> {
             while (true) {
@@ -33,17 +33,15 @@ public class App {
         watchdog.setDaemon(true);
         watchdog.start();
 
-        // Reports
+
         Scanner in = new Scanner(System.in);
         CountryReport country = new CountryReport();
-        CityReport city = new CityReport();
 
         mainloop:
         while (true) {
             System.out.println("""
                 \n=== Reports ===
                 1) Country Report
-                2) City Report
                 0) Exit
                 """);
             System.out.print("Choose: ");
@@ -52,7 +50,6 @@ public class App {
 
             switch (c) {
                 case "1" -> country.run(db.getConnection());
-                case "2" -> city.run(db.getConnection());
                 case "0" -> { break mainloop; }
                 default -> System.out.println("Unknown option.");
             }

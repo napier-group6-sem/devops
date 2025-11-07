@@ -13,8 +13,11 @@
 + mvn package -DskipTests
 + docker compose run --rm -it app
 
-
-Make sure your Docker Desktop is running!
+### Before you run the code, you need to make sure:
+- Docker Desktop is running ✓
+- Maven is installed ✓
+- Git is installed ✓
+- Java is installed ✓
 
 ---
 
