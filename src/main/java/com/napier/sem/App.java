@@ -57,7 +57,7 @@ public class App {
         }
 
         db.disconnect();
-        System.out.println("Bye!!");
+        System.out.println("Bye!");
     }
 
     private static String getenvOr(String k, String def) {
