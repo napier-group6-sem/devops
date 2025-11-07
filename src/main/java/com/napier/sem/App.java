@@ -9,7 +9,7 @@ public class App {
 
     public static void main(String[] args) {
         String host = getenvOr("DB_HOST", "localhost");
-        int    port = Integer.parseInt(getenvOr("DB_PORT", "3306"));
+        int port    = Integer.parseInt(getenvOr("DB_PORT", "3307"));
         String name = getenvOr("DB_NAME", "world");
         String user = getenvOr("DB_USER", "root");
         String pass = getenvOr("DB_PASS", "example");
@@ -35,13 +35,13 @@ public class App {
 
 
         Scanner in = new Scanner(System.in);
-        CountryReport country = new CountryReport();
+        CapitalCityReport  country = new CapitalCityReport ();
 
         mainloop:
         while (true) {
             System.out.println("""
                 \n=== Reports ===
-                1) Country Report
+                1) Capital City Report
                 0) Exit
                 """);
             System.out.print("Choose: ");
