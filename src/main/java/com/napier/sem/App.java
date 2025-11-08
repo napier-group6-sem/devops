@@ -9,7 +9,7 @@ public class App {
 
     public static void main(String[] args) {
         String host = getenvOr("DB_HOST", "localhost");
-        int    port = Integer.parseInt(getenvOr("DB_PORT", "3306"));
+        int port    = Integer.parseInt(getenvOr("DB_PORT", "3307"));
         String name = getenvOr("DB_NAME", "world");
         String user = getenvOr("DB_USER", "root");
         String pass = getenvOr("DB_PASS", "example");
@@ -17,7 +17,6 @@ public class App {
         Database db = new Database();
         db.connect(host, port, name, user, pass);
 
-        // Idle timeout watchdog
         int idleSec = Integer.parseInt(getenvOr("APP_IDLE_SECONDS", "30"));
         Thread watchdog = new Thread(() -> {
             while (true) {
@@ -33,17 +32,16 @@ public class App {
         watchdog.setDaemon(true);
         watchdog.start();
 
-        // Reports
         Scanner in = new Scanner(System.in);
-        CountryReport country = new CountryReport();
-        CityReport city = new CityReport();
+        CountryReport countryReport = new CountryReport();
+        CapitalCityReport capitalCityReport = new CapitalCityReport();
 
         mainloop:
         while (true) {
             System.out.println("""
                 \n=== Reports ===
                 1) Country Report
-                2) City Report
+                2) Capital City Report
                 0) Exit
                 """);
             System.out.print("Choose: ");
@@ -51,8 +49,8 @@ public class App {
             LAST_ACTIVITY.set(System.currentTimeMillis());
 
             switch (c) {
-                case "1" -> country.run(db.getConnection());
-                case "2" -> city.run(db.getConnection());
+                case "1" -> countryReport.run(db.getConnection());
+                case "2" -> capitalCityReport.run(db.getConnection());
                 case "0" -> { break mainloop; }
                 default -> System.out.println("Unknown option.");
             }
