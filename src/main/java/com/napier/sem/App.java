@@ -46,6 +46,7 @@ public class App {
                 1) Country Report
                 2) City Report
                 3) Capital City Report
+                4) Language Report
                 0) Exit
                 """);
             System.out.print("Choose: ");
@@ -56,6 +57,7 @@ public class App {
                 case "1" -> country.run(db.getConnection());
                 case "2" -> city.run(db.getConnection());
                 case "3" -> capitalcity.run(db.getConnection());
+                case "4" -> new LangReport().run(db.getConnection());
                 case "0" -> { break mainloop; }
                 default -> System.out.println("Unknown option.");
             }
