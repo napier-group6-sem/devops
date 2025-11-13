@@ -1,10 +1,11 @@
-name: A workflow for my App
+name: Build, Test and Run App
 on: push
 
 jobs:
-  Build:
-    name: Build and Start Using docker-compose
+  build:
+    name: Build, test and run using docker-compose
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,7 +17,28 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Package and Run docker compose
+      - name: Start database container
+        run: |
+          docker compose up -d db
+
+      - name: Wait for database to be healthy
+        run: |
+          for i in {1..30}; do
+            status=$(docker inspect --format='{{json .State.Health.Status}}' sem_db || echo '"starting"')
+            echo "DB health status: $status"
+            if [ "$status" = "\"healthy\"" ]; then
+              echo "Database is healthy!"
+              break
+            fi
+            sleep 5
+          done
+
+
+      - name: Run unit and integration tests
+        run: mvn -B test
+
+
+      - name: Package and run docker compose
         run: |
           mvn -B package -DskipTests
           docker compose up --build --abort-on-container-exit --exit-code-from app
