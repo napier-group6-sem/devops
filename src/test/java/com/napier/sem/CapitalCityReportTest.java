@@ -5,6 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
+/**
+ * Unit tests for the CapitalCityReport class.
+ * Tests name(), nz(), and verifies that header and separator output is formatted as expected.
+ */
 
 class CapitalCityReportTest {
     private PrintStream originalOut;

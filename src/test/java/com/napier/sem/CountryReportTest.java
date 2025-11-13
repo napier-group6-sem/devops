@@ -5,7 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Unit tests for the CountryReport class.
+ * Verifies name(), nz(), and the formatting of table headers and separators.
+ */
 class CountryReportTest {
     private PrintStream originalOut;
     private ByteArrayOutputStream out;

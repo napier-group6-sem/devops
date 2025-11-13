@@ -5,6 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
+/**
+ * Unit tests for the CityReport class.
+ * Ensures name(), nz(), and header/row formatting behave correctly.
+ */
 
 class CityReportTest {
     private PrintStream originalOut;
