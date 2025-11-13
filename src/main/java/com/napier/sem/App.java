@@ -2,6 +2,10 @@ package com.napier.sem;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
+/**
+ * The main class of the application that connects to the database, starts the idle timeout watcher.
+ * Displays the menu, and lets the user access all available reports.
+ */
 
 public class App {
 

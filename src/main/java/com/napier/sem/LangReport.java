@@ -4,7 +4,10 @@ package com.napier.sem;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
+/**
+ * Language report allows the organisation to see the number of people who speak the particular language.
+ * It is sorted from the greatest to smallest number, including the percentage of the world population.
+ */
 
 public class LangReport {
 
