@@ -5,12 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * File: Database.java
+ *
  * Description: Handles all database connection operations for the application, including
  *              establishing and closing MySQL connections, retry logic for connection
  *              attempts, and providing access to the active Connection instance.
- * Authors: Danylo Vanin, Stanislav Dvoryannikov, Lisa Burns, Tharun Siddharth Shyam
- * Date: 14 October 2025
  */
 
 public class Database {

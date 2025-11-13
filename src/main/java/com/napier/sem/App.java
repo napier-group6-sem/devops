@@ -2,6 +2,10 @@ package com.napier.sem;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
+/**
+ * The main class of the application that connects to the database, starts the idle timeout watcher.
+ * Displays the menu, and lets the user access all available reports.
+ */
 
 public class App {
 
@@ -46,6 +50,7 @@ public class App {
                 1) Country Report
                 2) City Report
                 3) Capital City Report
+                4) Language Report
                 0) Exit
                 """);
             System.out.print("Choose: ");
@@ -56,6 +61,7 @@ public class App {
                 case "1" -> country.run(db.getConnection());
                 case "2" -> city.run(db.getConnection());
                 case "3" -> capitalcity.run(db.getConnection());
+                case "4" -> new LangReport().run(db.getConnection());
                 case "0" -> { break mainloop; }
                 default -> System.out.println("Unknown option.");
             }
