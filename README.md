@@ -19,9 +19,13 @@
 - Git is installed ✓
 - Java is installed ✓
 
-### For Unit test 
-+ mvn clean test 
+### For Unit test:
+- mvn clean test
+
+#### To run a specific unit test: 
+- mvn -Dtest=classname test (just replace classname with name of the class you need)
 ---
+
 
 + **Master Build Status** ![workflow](https://github.com/danylovanin11/devops/actions/workflows/main.yml/badge.svg)  
 + **Develop Build Status** ![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/danylovanin11/devops/main.yml?branch=develop&style=flat-square)  

@@ -10,18 +10,7 @@ import java.util.Scanner;
 
 public class CityReport {
 
-    /**
-     * Returns the name of the report module.
-     */
-
     public String name() { return "City Report"; }
-
-    /**
-     * Main interactive loop for city report options.
-     * Displays a menu, accepts user input, and executes corresponding queries.
-     *
-     * @param con Active SQL connection to the world database
-     */
 
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);

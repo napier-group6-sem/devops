@@ -10,16 +10,9 @@ import java.util.Scanner;
  */
 public class CapitalCityReport {
 
-    /**
-     * Returns the name of this report.
-     * @return the name of the report.
-     */
     public String name() { return "Capital City Report"; }
 
-    /**
-     * Runs the Capital City Report menu and handles user input.
-     * @param con the database connection.
-     */
+
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);
 
@@ -64,11 +57,6 @@ public class CapitalCityReport {
         }
     }
 
-    /**
-     * Displays all capital cities in the world ordered by population (descending).
-     * @param con the database connection.
-     * @throws SQLException if a database access error occurs.
-     */
     private void queryWorld(Connection con) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -79,12 +67,7 @@ public class CapitalCityReport {
         executeQuery(con, sql);
     }
 
-    /**
-     * Displays all capital cities in a specific continent ordered by population.
-     * @param con the database connection.
-     * @param continent the name of the continent.
-     * @throws SQLException if a database access error occurs.
-     */
+
     private void queryByContinent(Connection con, String continent) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -98,9 +81,6 @@ public class CapitalCityReport {
 
     /**
      * Displays all capital cities in a specific region ordered by population.
-     * @param con the database connection.
-     * @param region the name of the region.
-     * @throws SQLException if a database access error occurs.
      */
     private void queryByRegion(Connection con, String region) throws SQLException {
         String sql = """
@@ -115,9 +95,6 @@ public class CapitalCityReport {
 
     /**
      * Displays the top N populated capital cities in the world.
-     * @param con the database connection.
-     * @param n the number of cities to display.
-     * @throws SQLException if a database access error occurs.
      */
     private void queryTopWorld(Connection con, int n) throws SQLException {
         String sql = """
@@ -132,10 +109,6 @@ public class CapitalCityReport {
 
     /**
      * Displays the top N populated capital cities in a specific continent.
-     * @param con the database connection.
-     * @param continent the continent name.
-     * @param n the number of cities to display.
-     * @throws SQLException if a database access error occurs.
      */
     private void queryTopContinent(Connection con, String continent, int n) throws SQLException {
         String sql = """
@@ -151,10 +124,6 @@ public class CapitalCityReport {
 
     /**
      * Displays the top N populated capital cities in a specific region.
-     * @param con the database connection.
-     * @param region the region name.
-     * @param n the number of cities to display.
-     * @throws SQLException if a database access error occurs.
      */
     private void queryTopRegion(Connection con, String region, int n) throws SQLException {
         String sql = """
@@ -170,10 +139,6 @@ public class CapitalCityReport {
 
     /**
      * Executes a SQL query with optional parameters and prints the results.
-     * @param con the database connection.
-     * @param sql the SQL statement.
-     * @param params optional query parameters.
-     * @throws SQLException if a database access error occurs.
      */
     private void executeQuery(Connection con, String sql, Object... params) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -189,8 +154,6 @@ public class CapitalCityReport {
 
     /**
      * Prints the result set in a formatted table layout.
-     * @param rs the ResultSet containing query results.
-     * @throws SQLException if a database access error occurs.
      */
     private void print(ResultSet rs) throws SQLException {
         String[] head = {"Capital", "Country", "Continent", "Region", "Population"};
@@ -210,8 +173,6 @@ public class CapitalCityReport {
 
     /**
      * Prints a single row of data in the table.
-     * @param w the column widths.
-     * @param cells the data cells.
      */
     private static void printRow(int[] w, String... cells) {
         StringBuilder sb = new StringBuilder();
@@ -225,7 +186,6 @@ public class CapitalCityReport {
 
     /**
      * Prints a separator line between rows in the table.
-     * @param w the column widths.
      */
     private static void printSep(int[] w) {
         StringBuilder sb = new StringBuilder();
@@ -238,8 +198,6 @@ public class CapitalCityReport {
 
     /**
      * Returns an empty string if the given string is null.
-     * @param s the input string.
-     * @return an empty string if null, otherwise the same string.
      */
     private static String nz(String s) { return s == null ? "" : s; }
 }
