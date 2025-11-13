@@ -19,6 +19,8 @@
 - Git is installed ✓
 - Java is installed ✓
 
+### For Unit test 
++ mvn clean test 
 ---
 
 + **Master Build Status** ![workflow](https://github.com/danylovanin11/devops/actions/workflows/main.yml/badge.svg)  
