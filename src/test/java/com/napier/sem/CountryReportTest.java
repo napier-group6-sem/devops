@@ -4,7 +4,9 @@ import org.junit.jupiter.api.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Unit tests for the CountryReport class.
  * Verifies name(), nz(), and the formatting of table headers and separators.
@@ -14,35 +16,71 @@ class CountryReportTest {
     private ByteArrayOutputStream out;
 
     @BeforeEach
-    void setup() { originalOut = System.out; out = new ByteArrayOutputStream(); System.setOut(new PrintStream(out)); }
+    void setup() {
+        originalOut = System.out;
+        out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+    }
 
     @AfterEach
-    void tearDown() { System.setOut(originalOut); }
+    void tearDown() {
+        System.setOut(originalOut);
+    }
 
     @Test
     void name_returns_expected_title() {
-        assertEquals("Country Report", new CountryReport().name());
+        assertEquals(
+                "Country Report",
+                new CountryReport().name(),
+                "name() should return 'Country Report'"
+        );
     }
 
+    @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
     @Test
     void nz_returns_empty_for_null_and_same_for_value() throws Exception {
         Method nz = CountryReport.class.getDeclaredMethod("nz", String.class);
         nz.setAccessible(true);
-        assertEquals("", (String) nz.invoke(null, (Object) null));
-        assertEquals("Paris", (String) nz.invoke(null, "Paris"));
+
+        assertEquals(
+                "",
+                (String) nz.invoke(null, (Object) null),
+                "nz(null) should return empty string"
+        );
+
+        assertEquals(
+                "Paris",
+                (String) nz.invoke(null, "Paris"),
+                "nz('Paris') should return the same non-null value"
+        );
     }
 
+    @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
     @Test
     void header_uses_expected_titles_and_separators() throws Exception {
         Method printRow = CountryReport.class.getDeclaredMethod("printRow", int[].class, String[].class);
         Method printSep = CountryReport.class.getDeclaredMethod("printSep", int[].class);
-        printRow.setAccessible(true); printSep.setAccessible(true);
-        String[] head = {"Code","Name","Continent","Region","Population","Capital"};
-        int[] w = {5,44,13,26,12,30};
+        printRow.setAccessible(true);
+        printSep.setAccessible(true);
+
+        String[] head = {"Code", "Name", "Continent", "Region", "Population", "Capital"};
+        int[] w = {5, 44, 13, 26, 12, 30};
+
         printRow.invoke(null, (Object) w, (Object) head);
         printSep.invoke(null, (Object) w);
+
         String s = out.toString();
-        for (String h : head) assertTrue(s.contains(h));
-        assertTrue(s.contains("-+-"));
+
+        for (String h : head) {
+            assertTrue(
+                    s.contains(h),
+                    "Header should contain column '" + h + "'"
+            );
+        }
+
+        assertTrue(
+                s.contains("-+-"),
+                "Header should contain '-+-' separators between columns"
+        );
     }
 }
