@@ -10,6 +10,7 @@
 ## Run instructions
 #### Commands to paste into Terminal:
 
++ docker compose up -d db
 + mvn package -DskipTests
 + docker compose run --rm -it app
 

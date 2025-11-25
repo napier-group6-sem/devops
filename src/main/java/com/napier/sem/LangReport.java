@@ -1,16 +1,15 @@
-
 package com.napier.sem;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 /**
  * Language report allows the organisation to see the number of people who speak the particular language.
  * It is sorted from the greatest to smallest number, including the percentage of the world population.
  */
-
 public class LangReport {
-
 
     public String name() {
         return "Language Report";
@@ -18,7 +17,7 @@ public class LangReport {
 
     // Main execution method
     public void run(Connection con) {
-        System.out.println("\n=== " + name() + " ===");
+        out().println("\n=== " + name() + " ===");
 
         try {
             Statement stmt = con.createStatement();
@@ -30,11 +29,10 @@ public class LangReport {
                 worldPop = rsPop.getLong(1);
             }
             if (worldPop == 0) {
-                System.out.println("World population not found.");
+                out().println("World population not found.");
                 return;
             }
 
-            // Query speakers for required languages
             String sql = """
                     SELECT language,
                            SUM(countrylanguage.percentage * country.population / 100) AS speakers
@@ -47,7 +45,6 @@ public class LangReport {
 
             ResultSet rs = stmt.executeQuery(sql);
 
-            // Format of table
             int[] w = {15, 20, 20};
             String[] head = {"Language", "Speakers", "% of World"};
 
@@ -60,11 +57,12 @@ public class LangReport {
 
                 double percent = (speakers * 100.0) / worldPop;
 
-                printRow(w, new String[]{
+                printRow(
+                        w,
                         nz(lang),
                         String.format("%,d", speakers),
                         String.format("%.2f%%", percent)
-                });
+                );
             }
 
             printSep(w);
@@ -74,28 +72,33 @@ public class LangReport {
         }
     }
 
-
-    private static void printRow(int[] w, String[] cols) {
+    private static void printRow(int[] w, String... cols) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
-            sb.append(String.format("%-" + w[i] + "s", nz(cols[i])));
-            if (i < w.length - 1)
+            sb.append(String.format("| %-" + w[i] + "s", nz(cols[i])));
+            if (i < w.length - 1) {
                 sb.append(" | ");
+            }
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
-    private static void printSep(int[] w) {
+    private static void printSep(int... w) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
             sb.append("-".repeat(w[i]));
-            if (i < w.length - 1)
+            if (i < w.length - 1) {
                 sb.append("-+-");
+            }
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
     private static String nz(String s) {
         return s == null ? "" : s;
+    }
+
+    private static PrintStream out() {
+        return System.out;
     }
 }

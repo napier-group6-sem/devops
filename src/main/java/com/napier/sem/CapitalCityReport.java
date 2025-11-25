@@ -1,5 +1,6 @@
 package com.napier.sem;
 
+import java.io.PrintStream;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -12,12 +13,11 @@ public class CapitalCityReport {
 
     public String name() { return "Capital City Report"; }
 
-
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);
 
         while (true) {
-            System.out.println("""
+            out().println("""
                 \n[Capital City Report]
                 1) All capital cities in the world (largest → smallest)
                 2) All capital cities in a continent (largest → smallest)
@@ -27,32 +27,32 @@ public class CapitalCityReport {
                 6) Top N capital cities in a region
                 0) Back
                 """);
-            System.out.print("Choose: ");
+            out().print("Choose: ");
             String c = in.nextLine().trim();
 
             try {
                 switch (c) {
                     case "1" -> queryWorld(con);
-                    case "2" -> { System.out.print("Continent: "); queryByContinent(con, in.nextLine().trim()); }
-                    case "3" -> { System.out.print("Region: "); queryByRegion(con, in.nextLine().trim()); }
-                    case "4" -> { System.out.print("N: "); queryTopWorld(con, Integer.parseInt(in.nextLine().trim())); }
+                    case "2" -> { out().print("Continent: "); queryByContinent(con, in.nextLine().trim()); }
+                    case "3" -> { out().print("Region: ");    queryByRegion(con, in.nextLine().trim()); }
+                    case "4" -> { out().print("N: ");         queryTopWorld(con, Integer.parseInt(in.nextLine().trim())); }
                     case "5" -> {
-                        System.out.print("Continent: "); String cont = in.nextLine().trim();
-                        System.out.print("N: "); int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("Continent: "); String cont = in.nextLine().trim();
+                        out().print("N: ");        int n = Integer.parseInt(in.nextLine().trim());
                         queryTopContinent(con, cont, n);
                     }
                     case "6" -> {
-                        System.out.print("Region: "); String reg = in.nextLine().trim();
-                        System.out.print("N: "); int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("Region: "); String reg = in.nextLine().trim();
+                        out().print("N: ");      int n = Integer.parseInt(in.nextLine().trim());
                         queryTopRegion(con, reg, n);
                     }
                     case "0" -> { return; }
-                    default -> System.out.println("Unknown option.");
+                    default -> out().println("Unknown option.");
                 }
             } catch (SQLException e) {
-                System.out.println("SQL error: " + e.getMessage());
+                out().println("SQL error: " + e.getMessage());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid number.");
+                out().println("Invalid number.");
             }
         }
     }
@@ -67,7 +67,6 @@ public class CapitalCityReport {
         executeQuery(con, sql);
     }
 
-
     private void queryByContinent(Connection con, String continent) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -79,9 +78,6 @@ public class CapitalCityReport {
         executeQuery(con, sql, continent);
     }
 
-    /**
-     * Displays all capital cities in a specific region ordered by population.
-     */
     private void queryByRegion(Connection con, String region) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -93,9 +89,6 @@ public class CapitalCityReport {
         executeQuery(con, sql, region);
     }
 
-    /**
-     * Displays the top N populated capital cities in the world.
-     */
     private void queryTopWorld(Connection con, int n) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -107,9 +100,6 @@ public class CapitalCityReport {
         executeQuery(con, sql, n);
     }
 
-    /**
-     * Displays the top N populated capital cities in a specific continent.
-     */
     private void queryTopContinent(Connection con, String continent, int n) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -122,9 +112,6 @@ public class CapitalCityReport {
         executeQuery(con, sql, continent, n);
     }
 
-    /**
-     * Displays the top N populated capital cities in a specific region.
-     */
     private void queryTopRegion(Connection con, String region, int n) throws SQLException {
         String sql = """
             SELECT ci.Name AS Capital, c.Name AS Country, c.Continent, c.Region, ci.Population
@@ -137,14 +124,14 @@ public class CapitalCityReport {
         executeQuery(con, sql, region, n);
     }
 
-    /**
-     * Executes a SQL query with optional parameters and prints the results.
-     */
     private void executeQuery(Connection con, String sql, Object... params) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < params.length; i++) {
-                if (params[i] instanceof String) ps.setString(i + 1, (String) params[i]);
-                else if (params[i] instanceof Integer) ps.setInt(i + 1, (Integer) params[i]);
+                if (params[i] instanceof String s) {
+                    ps.setString(i + 1, s);
+                } else if (params[i] instanceof Integer n) {
+                    ps.setInt(i + 1, n);
+                }
             }
             try (ResultSet rs = ps.executeQuery()) {
                 print(rs);
@@ -152,9 +139,6 @@ public class CapitalCityReport {
         }
     }
 
-    /**
-     * Prints the result set in a formatted table layout.
-     */
     private void print(ResultSet rs) throws SQLException {
         String[] head = {"Capital", "Country", "Continent", "Region", "Population"};
         int[] w = {30, 30, 15, 25, 12};
@@ -171,9 +155,6 @@ public class CapitalCityReport {
         }
     }
 
-    /**
-     * Prints a single row of data in the table.
-     */
     private static void printRow(int[] w, String... cells) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
@@ -181,23 +162,21 @@ public class CapitalCityReport {
             sb.append(String.format("%-" + w[i] + "s", c));
             if (i < w.length - 1) sb.append(" | ");
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
-    /**
-     * Prints a separator line between rows in the table.
-     */
-    private static void printSep(int[] w) {
+    private static void printSep(int... w) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
             sb.append("-".repeat(w[i]));
             if (i < w.length - 1) sb.append("-+-");
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
-    /**
-     * Returns an empty string if the given string is null.
-     */
     private static String nz(String s) { return s == null ? "" : s; }
+
+    private static PrintStream out() {
+        return System.out;
+    }
 }

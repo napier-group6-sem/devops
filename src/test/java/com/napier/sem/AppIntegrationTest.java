@@ -33,7 +33,7 @@ class AppIntegrationTest {
             db.disconnect();
         }
     }
-
+    @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
     @Test
     @Order(1)
     void connectionIsEstablished() throws Exception {
@@ -42,11 +42,17 @@ class AppIntegrationTest {
 
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT 1")) {
-            assertTrue(rs.next(), "Should return one row");
-            assertEquals(1, rs.getInt(1));
+
+            if (rs.next()) {
+                int value = rs.getInt(1);
+                assertEquals(1, value, "First column should be 1");
+            } else {
+                fail("ResultSet should contain exactly one row");
+            }
         }
     }
 
+    @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
     @Test
     @Order(2)
     void countryReportWorldRunsWithoutException() throws Exception {

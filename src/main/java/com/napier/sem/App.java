@@ -2,14 +2,17 @@ package com.napier.sem;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
+
 /**
  * The main class of the application that connects to the database, starts the idle timeout watcher.
  * Displays the menu, and lets the user access all available reports.
  */
-
+@SuppressWarnings("PMD.GuardLogStatement")
 public class App {
 
     private static final AtomicLong LAST_ACTIVITY = new AtomicLong(System.currentTimeMillis());
+    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
     public static void main(String[] args) {
         String host = getenvOr("DB_HOST", "localhost");
@@ -27,11 +30,19 @@ public class App {
             while (true) {
                 long idle = System.currentTimeMillis() - LAST_ACTIVITY.get();
                 if (idle > idleSec * 1000L) {
-                    System.out.println("\nNo input for " + idleSec + " seconds. Exiting...");
-                    try { db.disconnect(); } catch (Exception ignored) {}
+                    LOGGER.warning("\nNo input for " + idleSec + " seconds. Exiting...");
+                    try {
+                        db.disconnect();
+                    } catch (Exception ignored) {
+                        // ignore
+                    }
                     System.exit(0);
                 }
-                try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
+                    // ignore
+                }
             }
         });
         watchdog.setDaemon(true);
@@ -46,8 +57,9 @@ public class App {
 
         mainloop:
         while (true) {
-            System.out.println("""
-                \n=== Reports ===
+            LOGGER.info("""
+                
+                === Reports ===
                 1) Country Report
                 2) City Report
                 3) Capital City Report
@@ -55,7 +67,8 @@ public class App {
                 5) Language Report
                 0) Exit
                 """);
-            System.out.print("Choose: ");
+
+            LOGGER.info("Choose: ");
             String c = in.nextLine().trim();
             LAST_ACTIVITY.set(System.currentTimeMillis());
 
@@ -66,12 +79,12 @@ public class App {
                 case "4" -> population.run(db.getConnection());
                 case "5" -> new LangReport().run(db.getConnection());
                 case "0" -> { break mainloop; }
-                default -> System.out.println("Unknown option.");
+                default -> LOGGER.warning("Unknown option.");
             }
         }
 
         db.disconnect();
-        System.out.println("Bye!");
+        LOGGER.info("Bye!");
     }
 
     private static String getenvOr(String k, String def) {
