@@ -1,28 +1,22 @@
 package com.napier.sem;
 
+import java.io.PrintStream;
 import java.sql.*;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 /**
  * CityReport generates various reports about cities from the world database.
  * It supports filtering by continent, region, country, district, and top-N queries.
  */
-@SuppressWarnings("PMD.GuardLogStatement")
 public class CityReport {
 
-    private static final Logger LOGGER = Logger.getLogger(CityReport.class.getName());
-
-    public String name() {
-        return "City Report";
-    }
+    public String name() { return "City Report"; }
 
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);
-        while (true) {            // Display menu options
-            LOGGER.info("""
-                
-                [City Report]
+        while (true) {
+            out().println("""
+                \n[City Report]
                 1) All cities in the world (DESC)
                 2) All cities in a continent (DESC)
                 3) All cities in a region (DESC)
@@ -35,77 +29,47 @@ public class CityReport {
                 10) Top N cities in a district
                 0) Back
                 """);
-            LOGGER.info("Choose: ");
+            out().print("Choose: ");
             String c = in.nextLine().trim();
-            try {                             // Dispatch based on user choice
+            try {
                 switch (c) {
                     case "1" -> queryWorld(con);
-                    case "2" -> {
-                        LOGGER.info("Continent: ");
-                        queryByContinent(con, in.nextLine().trim());
-                    }
-                    case "3" -> {
-                        LOGGER.info("Region: ");
-                        queryByRegion(con, in.nextLine().trim());
-                    }
-                    case "4" -> {
-                        LOGGER.info("Country: ");
-                        queryByCountry(con, in.nextLine().trim());
-                    }
-                    case "5" -> {
-                        LOGGER.info("District: ");
-                        queryByDistrict(con, in.nextLine().trim());
-                    }
-                    case "6" -> {
-                        LOGGER.info("N: ");
-                        queryTopWorld(con, Integer.parseInt(in.nextLine().trim()));
-                    }
+                    case "2" -> { out().print("Continent: "); queryByContinent(con, in.nextLine().trim()); }
+                    case "3" -> { out().print("Region: ");    queryByRegion(con, in.nextLine().trim()); }
+                    case "4" -> { out().print("Country: ");   queryByCountry(con, in.nextLine().trim()); }
+                    case "5" -> { out().print("District: ");  queryByDistrict(con, in.nextLine().trim()); }
+                    case "6" -> { out().print("N: ");         queryTopWorld(con, Integer.parseInt(in.nextLine().trim())); }
                     case "7" -> {
-                        LOGGER.info("Continent: ");
-                        String cont = in.nextLine().trim();
-                        LOGGER.info("N: ");
-                        int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("Continent: "); String cont = in.nextLine().trim();
+                        out().print("N: ");         int n = Integer.parseInt(in.nextLine().trim());
                         queryTopContinent(con, cont, n);
                     }
                     case "8" -> {
-                        LOGGER.info("Region: ");
-                        String reg = in.nextLine().trim();
-                        LOGGER.info("N: ");
-                        int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("Region: "); String reg = in.nextLine().trim();
+                        out().print("N: ");       int n = Integer.parseInt(in.nextLine().trim());
                         queryTopRegion(con, reg, n);
                     }
                     case "9" -> {
-                        LOGGER.info("Country: ");
-                        String country = in.nextLine().trim();
-                        LOGGER.info("N: ");
-                        int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("Country: "); String country = in.nextLine().trim();
+                        out().print("N: ");       int n = Integer.parseInt(in.nextLine().trim());
                         queryTopCountry(con, country, n);
                     }
                     case "10" -> {
-                        LOGGER.info("District: ");
-                        String dist = in.nextLine().trim();
-                        LOGGER.info("N: ");
-                        int n = Integer.parseInt(in.nextLine().trim());
+                        out().print("District: "); String dist = in.nextLine().trim();
+                        out().print("N: ");        int n = Integer.parseInt(in.nextLine().trim());
                         queryTopDistrict(con, dist, n);
                     }
-                    case "0" -> {
-                        return;             // Exit to main menu
-                    }
-                    default -> LOGGER.warning("Unknown option.");
+                    case "0" -> { return; }
+                    default -> out().println("Unknown option.");
                 }
             } catch (SQLException e) {
-                LOGGER.severe("SQL error: " + e.getMessage());
+                out().println("SQL error: " + e.getMessage());
             } catch (NumberFormatException e) {
-                LOGGER.warning("Invalid number.");
+                out().println("Invalid number.");
             }
         }
     }
 
-    // --- Query Methods ---
-
-    /**
-     * Lists all cities in the world ordered by population descending.
-     */
     private void queryWorld(Connection con) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -114,14 +78,9 @@ public class CityReport {
             ORDER BY ci.Population DESC
         """;
         try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            print(rs);
-        }
+             ResultSet rs = ps.executeQuery()) { print(rs); }
     }
 
-    /**
-     * Lists all cities in a given continent.
-     */
     private void queryByContinent(Connection con, String continent) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -132,15 +91,10 @@ public class CityReport {
         """;
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, continent);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists all cities in a given region.
-     */
     private void queryByRegion(Connection con, String region) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -151,15 +105,10 @@ public class CityReport {
         """;
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, region);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists all cities in a given country.
-     */
     private void queryByCountry(Connection con, String country) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -170,15 +119,10 @@ public class CityReport {
         """;
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, country);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists all cities in a given district.
-     */
     private void queryByDistrict(Connection con, String district) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -189,15 +133,10 @@ public class CityReport {
         """;
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, district);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists top N cities in the world by population.
-     */
     private void queryTopWorld(Connection con, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -207,15 +146,10 @@ public class CityReport {
         """;
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, n);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists top N cities in a continent by population.
-     */
     private void queryTopContinent(Connection con, String continent, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -227,15 +161,10 @@ public class CityReport {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, continent);
             ps.setInt(2, n);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists top N cities in a region by population.
-     */
     private void queryTopRegion(Connection con, String region, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -247,15 +176,10 @@ public class CityReport {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, region);
             ps.setInt(2, n);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
-    /**
-     * Lists top N cities in a country by population.
-     */
     private void queryTopCountry(Connection con, String country, int n) throws SQLException {
         String sql = """
             SELECT ci.Name, co.Name AS Country, ci.District, ci.Population
@@ -267,9 +191,7 @@ public class CityReport {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, country);
             ps.setInt(2, n);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
@@ -284,22 +206,18 @@ public class CityReport {
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, district);
             ps.setInt(2, n);
-            try (ResultSet rs = ps.executeQuery()) {
-                print(rs);
-            }
+            try (ResultSet rs = ps.executeQuery()) { print(rs); }
         }
     }
 
     // --- Output Formatting ---
-
     private void print(ResultSet rs) throws SQLException {
-        String[] head = {"Name", "Country", "District", "Population"};
-        int[] w = {35, 35, 20, 12};
+        String[] head = {"Name","Country","District","Population"};
+        int[] w = {35,35,20,12};
         printRow(w, head);
         printSep(w);
         while (rs.next()) {
-            printRow(
-                    w,
+            printRow(w,
                     nz(rs.getString("Name")),
                     nz(rs.getString("Country")),
                     nz(rs.getString("District")),
@@ -311,11 +229,11 @@ public class CityReport {
     private static void printRow(int[] w, String... cells) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
-            String c = (i < cells.length && cells[i] != null) ? cells[i] : "";
+            String c = i < cells.length && cells[i] != null ? cells[i] : "";
             sb.append(String.format("%-" + w[i] + "s", c));
             if (i < w.length - 1) sb.append(" | ");
         }
-        LOGGER.info(sb.toString());
+        out().println(sb);
     }
 
     private static void printSep(int... w) {
@@ -324,10 +242,12 @@ public class CityReport {
             sb.append("-".repeat(w[i]));
             if (i < w.length - 1) sb.append("-+-");
         }
-        LOGGER.info(sb.toString());
+        out().println(sb);
     }
 
-    private static String nz(String s) {
-        return s == null ? "" : s;
+    private static String nz(String s) { return s == null ? "" : s; }
+
+    private static PrintStream out() {
+        return System.out;
     }
 }

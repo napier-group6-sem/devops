@@ -1,19 +1,15 @@
 package com.napier.sem;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.logging.Logger;
 
 /**
  * Language report allows the organisation to see the number of people who speak the particular language.
  * It is sorted from the greatest to smallest number, including the percentage of the world population.
  */
-@SuppressWarnings("PMD.GuardLogStatement")
 public class LangReport {
-
-    private static final Logger LOGGER = Logger.getLogger(LangReport.class.getName());
-    private static final Logger TABLE = Logger.getLogger("LangReport.Table");
 
     public String name() {
         return "Language Report";
@@ -21,7 +17,7 @@ public class LangReport {
 
     // Main execution method
     public void run(Connection con) {
-        LOGGER.info("\n=== " + name() + " ===");
+        out().println("\n=== " + name() + " ===");
 
         try {
             Statement stmt = con.createStatement();
@@ -33,11 +29,10 @@ public class LangReport {
                 worldPop = rsPop.getLong(1);
             }
             if (worldPop == 0) {
-                LOGGER.warning("World population not found.");
+                out().println("World population not found.");
                 return;
             }
 
-            // Query speakers for required languages
             String sql = """
                     SELECT language,
                            SUM(countrylanguage.percentage * country.population / 100) AS speakers
@@ -50,7 +45,6 @@ public class LangReport {
 
             ResultSet rs = stmt.executeQuery(sql);
 
-            // Format of table
             int[] w = {15, 20, 20};
             String[] head = {"Language", "Speakers", "% of World"};
 
@@ -60,6 +54,7 @@ public class LangReport {
             while (rs.next()) {
                 String lang = rs.getString("language");
                 long speakers = rs.getLong("speakers");
+
                 double percent = (speakers * 100.0) / worldPop;
 
                 printRow(
@@ -73,7 +68,6 @@ public class LangReport {
             printSep(w);
 
         } catch (Exception e) {
-            LOGGER.severe("Language report failed: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -86,7 +80,7 @@ public class LangReport {
                 sb.append(" | ");
             }
         }
-        TABLE.info(sb.toString());
+        out().println(sb);
     }
 
     private static void printSep(int... w) {
@@ -97,10 +91,14 @@ public class LangReport {
                 sb.append("-+-");
             }
         }
-        TABLE.info(sb.toString());
+        out().println(sb);
     }
 
     private static String nz(String s) {
         return s == null ? "" : s;
+    }
+
+    private static PrintStream out() {
+        return System.out;
     }
 }
