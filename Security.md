@@ -3,7 +3,7 @@
 ## Reporting a Vulnerability
 
 * Do not post vulnerabilities publicly.
-* Contact the maintainers immediately at your-email@example.com with a detailed report.
+* Contact the maintainers immediately at [gmail] with a detailed report.
 * Include:
   - Steps to reproduce
   - Potential impact
