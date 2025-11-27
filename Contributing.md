@@ -1,37 +1,21 @@
-Contributing to Population Records Project
+# Contributing to the Population Records Project
 
-Thank you for your interest in contributing. We welcome contributions from everyone.
+## Our Commitment
 
-How to Contribute
+We welcome contributions from everyone and want to make it easy to contribute, learn, and improve the project.
 
-Fork the repository and create your branch:
-git checkout -b feature/your-feature-name
+## How to Contribute
 
-Make your changes on the new branch.
+* Fork the repository and create a branch for your feature:
+  git checkout -b feature/your-feature-name
+* Make your changes on the new branch.
+* Run tests if applicable to make sure nothing breaks.
+* Commit your changes with clear, descriptive messages.
+* Push your branch to your fork:
+  git push origin feature/your-feature-name
+* Open a Pull Request against the main repository.
 
-Run tests if applicable to make sure nothing breaks.
+## Code Style
 
-Commit your changes with clear, descriptive messages.
-
-Push your branch to your fork:
-git push origin feature/your-feature-name
-
-Open a Pull Request against the main repository.
-
-Code Style
-
-Follow consistent naming conventions.
-
-Maintain proper indentation and formatting.
-
-Include comments for non-trivial logic.
-
-Reporting Bugs and Suggestions
-
-Use GitHub Issues to report bugs.
-
-Check existing issues before opening a new one.
-
-Include steps to reproduce, expected behavior, and screenshots if possible.
-
-Thank you for helping improve this project.
+* Follow consistent naming conventions.
+* Maintain proper in*
