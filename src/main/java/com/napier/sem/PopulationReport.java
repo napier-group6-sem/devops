@@ -1,5 +1,6 @@
 package com.napier.sem;
 
+import java.io.PrintStream;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -11,14 +12,13 @@ import java.util.Scanner;
  */
 public class PopulationReport {
 
-    // just returns the name so the main menu can display it
     public String name() { return "Population Report"; }
 
     public void run(Connection con) {
         Scanner in = new Scanner(System.in);
 
         while (true) {
-            System.out.println("""
+            out().println("""
                 \n[Population Report]
                 1) Population by continent (cities vs non-cities)
                 2) Population by region    (cities vs non-cities)
@@ -31,7 +31,7 @@ public class PopulationReport {
                 9) Population of a city
                 0) Back
                 """);
-            System.out.print("Choose: ");
+            out().print("Choose: ");
             String c = in.nextLine().trim();
 
             try {
@@ -41,38 +41,36 @@ public class PopulationReport {
                     case "3" -> popByCountry(con);
                     case "4" -> popWorld(con);
                     case "5" -> {
-                        System.out.print("Continent: ");
+                        out().print("Continent: ");
                         popContinent(con, in.nextLine().trim());
                     }
                     case "6" -> {
-                        System.out.print("Region: ");
+                        out().print("Region: ");
                         popRegion(con, in.nextLine().trim());
                     }
                     case "7" -> {
-                        System.out.print("Country: ");
+                        out().print("Country: ");
                         popCountry(con, in.nextLine().trim());
                     }
                     case "8" -> {
-                        System.out.print("District: ");
+                        out().print("District: ");
                         popDistrict(con, in.nextLine().trim());
                     }
                     case "9" -> {
-                        System.out.print("City: ");
+                        out().print("City: ");
                         popCity(con, in.nextLine().trim());
                     }
                     case "0" -> {
                         return;
                     }
-                    default -> System.out.println("Unknown option.");
+                    default -> out().println("Unknown option.");
                 }
             } catch (SQLException e) {
-                System.out.println("SQL error: " + e.getMessage());
+                out().println("SQL error: " + e.getMessage());
             }
         }
     }
 
-
-    // population by continent
     private void popByContinent(Connection con) throws SQLException {
         String sql = """
             SELECT
@@ -92,11 +90,10 @@ public class PopulationReport {
 
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            printCityVsNonCityTable("Continent", rs);
+            printCityVsNonCityTable(rs);
         }
     }
 
-    // population by region
     private void popByRegion(Connection con) throws SQLException {
         String sql = """
             SELECT
@@ -116,11 +113,10 @@ public class PopulationReport {
 
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            printCityVsNonCityTable("Region", rs);
+            printCityVsNonCityTable(rs);
         }
     }
 
-    // population by country
     private void popByCountry(Connection con) throws SQLException {
         String sql = """
             SELECT
@@ -139,11 +135,11 @@ public class PopulationReport {
 
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            printCityVsNonCityTable("Country", rs);
+            printCityVsNonCityTable(rs);
         }
     }
 
-    private void printCityVsNonCityTable(String label, ResultSet rs) throws SQLException {
+    private void printCityVsNonCityTable(ResultSet rs) throws SQLException {
         String[] head = {"Name","Total Population","In Cities","% In Cities","Not In Cities","% Not In Cities"};
         int[] w = {30,18,18,12,18,14};
 
@@ -176,7 +172,7 @@ public class PopulationReport {
              ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
                 long pop = rs.getLong("Population");
-                System.out.printf("World population: %,d%n", pop);
+                out().printf("World population: %,d%n", pop);
             }
         }
     }
@@ -231,17 +227,15 @@ public class PopulationReport {
         }
     }
 
-    // prints a simple "Population of X" message (or "not found")
     private void printSingle(String kind, String name, ResultSet rs) throws SQLException {
         if (rs.next() && rs.getLong("Population") > 0) {
             long pop = rs.getLong("Population");
-            System.out.printf("Population of %s %s: %,d%n", kind, name, pop);
+            out().printf("Population of %s %s: %,d%n", kind, name, pop);
         } else {
-            System.out.printf("No population data found for %s: %s%n", kind, name);
+            out().printf("No population data found for %s: %s%n", kind, name);
         }
     }
 
-    // helper that prints a row nicely aligned
     private static void printRow(int[] w, String... cells) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
@@ -249,19 +243,21 @@ public class PopulationReport {
             sb.append(String.format("%-" + w[i] + "s", c));
             if (i < w.length - 1) sb.append(" | ");
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
-    // prints a line of dashes between header and data
-    private static void printSep(int[] w) {
+    private static void printSep(int... w) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < w.length; i++) {
             sb.append("-".repeat(w[i]));
             if (i < w.length - 1) sb.append("-+-");
         }
-        System.out.println(sb);
+        out().println(sb);
     }
 
-    // returns an empty string if null, so we don't print "null" everywhere
     private static String nz(String s) { return s == null ? "" : s; }
+
+    private static PrintStream out() {
+        return System.out;
+    }
 }
